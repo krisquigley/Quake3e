@@ -153,6 +153,13 @@ Content limit: 572 of the 575 sound files in retail `pak0.pk3` are 22,050 Hz and
 
 Rough effort: stages 1–3 a few weeks, reflections a few more (estimates).
 
+### Status (Nov 2026)
+
+- **Stages 1–3 done** on branch `audio-spatial`. Test runner: `tests/audio/run_audio_tests.py` (see its docstring). New backend: `code/client/snd_spatial.c`; Steam Audio wrapper: `code/client/snd_steamaudio.c` (loaded at runtime via `s_steamAudioLib`).
+- **Full-sphere HRTF.** Steam Audio's built-in HRTF has no data below about −45°, so directly below sounded like 45° down in front. `s_hrtfFile` loads a SOFA file instead. Recommended: SADIE II KU100 (`D1_48K_24bit_256tap_FIR_SOFA.sofa`, University of York, Apache 2.0, https://zenodo.org/records/12092466), 8,802 directions from −90° to +90°. Adds ~0.4 s to sound start-up. The HRTF gain is measured at start-up (pink noise from straight ahead) so loudness matches the classic mixer whatever dataset is loaded.
+- Measured cost of HRTF: about 3.5% of one core during the `four` demo, no underruns.
+- Next: stage 4 (occlusion), then stage 5 (reflections).
+
 ## Core principles
 
 1. **The versioned game API is the contract.** Document the system-call ABI and support versions N and N-1 side by side through compatibility shims. New features are opt-in extensions discovered through `trap_GetValue`. Engine upgrades must never force game or mod rewrites, only opt-in migrations.
