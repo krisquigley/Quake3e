@@ -158,7 +158,9 @@ Rough effort: stages 1–3 a few weeks, reflections a few more (estimates).
 - **Stages 1–3 done** on branch `audio-spatial`. Test runner: `tests/audio/run_audio_tests.py` (see its docstring). New backend: `code/client/snd_spatial.c`; Steam Audio wrapper: `code/client/snd_steamaudio.c` (loaded at runtime via `s_steamAudioLib`).
 - **Full-sphere HRTF.** Steam Audio's built-in HRTF has no data below about −45°, so directly below sounded like 45° down in front. `s_hrtfFile` loads a SOFA file instead. Recommended: SADIE II KU100 (`D1_48K_24bit_256tap_FIR_SOFA.sofa`, University of York, Apache 2.0, https://zenodo.org/records/12092466), 8,802 directions from −90° to +90°. Adds ~0.4 s to sound start-up. The HRTF gain is measured at start-up (pink noise from straight ahead) so loudness matches the classic mixer whatever dataset is loaded.
 - Measured cost of HRTF: about 3.5% of one core during the `four` demo, no underruns.
-- Next: stage 4 (occlusion), then stage 5 (reflections).
+- **Stage 4 (occlusion) done.** Five line-of-sight traces per sound against the world collision map (≈30 Hz per sound) give a 0–1 occlusion amount; occluded sounds get a 12 dB/oct low-pass (down to `s_occlusionCutoff`, 1 kHz) and a volume drop (to `s_occlusionGain`, 0.5), gliding over 80 ms. Fully occluded: −6 dB below 300 Hz, about −30 dB above 3 kHz. Cost ≈0.3% of a core. Limits: brush entities (doors, platforms) don't occlude yet; line of sight only, so a sound round a corner next to an open doorway is muffled as if behind a wall (stage 5 pathing fixes this).
+- Next: stage 5 (reflections and sound paths around corners).
+- Idea to evaluate: ML bandwidth extension of the 22 kHz retail sounds (they contain nothing above 11 kHz, where much of the HRTF height cue lives). Personal use only for id's assets; the melee game should author at 48 kHz.
 
 ## Core principles
 
